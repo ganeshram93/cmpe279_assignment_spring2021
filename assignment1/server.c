@@ -51,6 +51,12 @@ int socket_init(struct sockaddr_in *address, int *server_fd, int *addrlen)
         exit(EXIT_FAILURE);
     }
 
+    if (listen(*server_fd, 3) < 0)
+    {
+        perror("Error: Unable to listen. Exiting");
+        exit(EXIT_FAILURE);
+    }
+
     printf("=====In parent process=====\n");
     realuid = getuid();
     euid = geteuid();
@@ -111,11 +117,6 @@ int child_process_data(struct sockaddr_in address, int addrlen, int server_fd)
     printf("Child Real GID: %d\n", realgid);
     printf("Child Effective GID: %d\n", egid);
 
-    if (listen(server_fd, 3) < 0)
-    {
-        perror("Error: Unable to listen. Exiting");
-        exit(EXIT_FAILURE);
-    }
     if ((new_socket = accept(server_fd, (struct sockaddr *)&address,
                        (socklen_t*)&addrlen)) < 0)
     {
